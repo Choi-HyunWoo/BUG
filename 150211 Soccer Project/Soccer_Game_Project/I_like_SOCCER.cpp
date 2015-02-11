@@ -3,14 +3,25 @@
 #include <gl/GLU.h>
 #include <gl/GLAux.h>
 #include <math.h>
+/* 150211 Update List (HyunWoo)
+ 충돌처리 할 collider를 캐릭터에 추가하겠습니다. 
+ collider1 -> 캐릭터 충돌 방지
+ collider2 -> 캐릭터의 공 인식 범위.
+ collider3 -> 캐릭터의 인공지능 인식 범위.				// 나중에 구현
+ 공 객체를 추가/ 공의 위치 변수를 추가하겠습니다.
+*/
+
 /* To do List
+HW)
+ 충돌처리 (Box Collider << AABB)
+JW)
+ 역학 (Gravity, Physics simulation)
+ 공 (Sphere collider)
+CS)
+ 텍스쳐 맵핑
+ =====================
  그림자 추가
  조명 배치 (Spotlight)
- 역학 (Gravity, Physics simulation)
- 충돌처리 (Box Collider << AABB)
- 공 (Sphere collider)
- 텍스쳐 맵핑
-
  애니메이션 추가 (shoot, pass)
  공에 역학 적용 
  공 소유/미소유 변수적용
@@ -24,21 +35,24 @@
  4. pass
 */
 
-// define animation status
+
+/*========== Character ==========*/
+
+// Define animation status
 #define ANI_STAND	0				// 서있는 모션
 #define ANI_WALK	1				// 걷는 모션
 #define ANI_RUN		2				// 뛰는 모션
 #define ANI_SHOOT	3				// 슛 모션
 #define ANI_PASS	4				// 패스 모션
 
-// animation status
+// Animation status
 static int ani = ANI_STAND;			// 애니메이션 판별 변수 (서있는 자세가 기본)
 
 // 키의 눌린 상태를 저장
 bool SpecialKeyStates[4] = {false, false, false, false};		// 0:LEFT	1:UP	2:RIGHT		3:DOWN
 bool KeyStates[2] = { false, false };							// 0:'E'	1:
 
-// angle
+// Angle List
 // 팔 각도
 GLfloat L_arm1_ang = 0.0f;			// arm1 : 어깨 각도
 GLfloat L_arm2_ang = 0.0f;			// arm2 : 팔꿈치 각도
@@ -59,7 +73,7 @@ GLfloat Neck_ang = 0.0f;
 GLfloat character_angle= 0.0f;
 
 // Character Position
-GLfloat character_pos_x = 0.0f;
+GLfloat character_pos_x = 20.0f;
 GLfloat character_pos_y = 0.0f;			// 중력 영향받음 
 GLfloat character_pos_z = 0.0f;
 
@@ -69,6 +83,17 @@ GLfloat speed = 0.0f;
 // Animation time (speed)
 static double walkTime = 0.0;
 static double runTime = 0.0;
+static double Dribble = 0.0;
+
+/*========== Ball ==========*/
+// Ball Position
+GLfloat ball_pos_x = 0.0f;
+GLfloat ball_pos_y = 0.0f;
+GLfloat ball_pos_z = 0.0f;
+// Ball Angle
+GLfloat ball_angle = 0.0f;
+
+bool HavingBall = false;
 
 /*========== Physics Simulation ==========*/
 GLfloat dt;							// 시간 변화량
@@ -76,6 +101,16 @@ const GLfloat acc = -9.8f;			// 중력가속도
 GLfloat vel = 0.0f;					// vel += acc*dt
 GLfloat pos = 0.0f;					// pos += vel*dt  , draw object at pos
 
+
+/*========== Draw Ball ==========*/
+void DrawBall(float xPos, float yPos, float zPos) {
+	glPushMatrix();
+		glTranslatef(0.0f, 1.0f, 0.0f);
+		glTranslatef(xPos, yPos, zPos);		// 공의 좌표로 이동
+		glColor3f(1.0f, 1.0f, 0.0f);
+		glutSolidSphere(1, 20, 20);
+	glPopMatrix();
+}
 
 /*========== Modeling Objects ==========*/
 void DrawHead(float xPos, float yPos, float zPos) {
@@ -141,6 +176,7 @@ void DrawJoint() {
 		glutSolidSphere(0.5, 10, 10);
 	glPopMatrix();
 }
+
 
 /*========== Draw Character ==========*/
 void DrawCharacter(float xPos, float yPos, float zPos) {
@@ -231,7 +267,29 @@ void DrawCharacter(float xPos, float yPos, float zPos) {
 			glPopMatrix();
 		glPopMatrix();
 	glPopMatrix();
+
+	if (HavingBall) {
+		if (ani == ANI_WALK) {
+			glPushMatrix();
+				glTranslatef(0.0f, -9.0f, abs(cos(Dribble))*5.0f+3.0f);
+				DrawBall(0.0f, 0.0f, 0.0f);
+			glPopMatrix();
+		}
+		else if (ani == ANI_RUN) {
+			glPushMatrix();
+				glTranslatef(0.0f, -9.0f, abs(cos(Dribble))*10.0f+3.0f);
+				DrawBall(0.0f, 0.0f, 0.0f);
+			glPopMatrix();
+		}
+		else if (ani == ANI_STAND) {
+			glPushMatrix();
+				glTranslatef(0.0f, -9.0f, 3.0f);
+				DrawBall(0.0f, 0.0f, 0.0f);
+			glPopMatrix();
+		}
+	}
 }
+
 
 /*========== Draw Animation ==========*/
 void DrawStand (float xPos, float yPos, float zPos) {
@@ -298,6 +356,7 @@ void DrawRun (float xPos, float yPos, float zPos) {
 	DrawCharacter(xPos, yPos, zPos);
 }
 
+
 /*========== Draw Environment ==========*/
 void DrawGround() {
 	glPushMatrix();
@@ -307,6 +366,12 @@ void DrawGround() {
 		glutSolidCube(1);
 	glPopMatrix();
 }
+void DrawSelected() {				// 캐릭터 선택 상태
+	glPushMatrix();
+		glColor3f(1.0f, 1.0f, 1.0f);		// 흰색
+	glPopMatrix();
+}
+
 
 /*========== Initialize Light ==========*/
 float Light0Position[]= {0.0f, 30.0f, 0.0f, 1.0f};		// 동차 좌표로 표시 (4번째값 1)
@@ -358,6 +423,8 @@ void InitLight() {
 	glEnable(GL_CULL_FACE);				// 후면제거
 }
 
+
+/*========== Callback Functions ==========*/
 // Display Callback Function
 void MyDisplay() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -377,6 +444,21 @@ void MyDisplay() {
 
 	DrawGround();						// 지면을 그린다.
 	
+	// 캐릭터가 공에 근접해 있다면 공 소유 O
+	if (abs(character_pos_x - ball_pos_x) < 2.0f) {
+		if (abs(character_pos_y - ball_pos_y) < 2.0f) {
+			if(abs(character_pos_z - ball_pos_z) < 2.0f) {
+				HavingBall = true;		// 공 소유 On
+				ball_pos_x = character_pos_x;
+				ball_pos_y = character_pos_y;
+				ball_pos_z = character_pos_z;
+			}
+		}
+	}
+	else {		// 캐릭터가 공에 근접해 있지 않다면 공 소유 X
+		HavingBall = false;
+		DrawBall(ball_pos_x, ball_pos_y, ball_pos_z);							// 공을 그린다.
+	}
 	// ** 캐릭터 모델 좌표계 ( 캐릭터의 발 사이 중심이 원점 )
 	glTranslatef(character_pos_x, 0.0f, character_pos_z);
 	// >> 중력을 줄때 모델좌표계 y값이 0일때를 바닥으로 인식할 수 있음
@@ -465,6 +547,7 @@ void MyTimer(int value) {
 	// 걷는 애니메이션과 뛰는 애니메이션 속도 설정
 	walkTime = walkTime + 0.12;
 	runTime = runTime + 0.15;
+	Dribble = Dribble + 0.05;
 	
 	// 방향에 따라 속도를 주어 캐릭터가 움직이도록 함
 	if (SpecialKeyStates[0] && SpecialKeyStates[1]) {					// 좌상단 이동
@@ -543,7 +626,7 @@ void MyIdle() {
 		speed = 1.0f;
 }
 
-// Resize Callback Function
+// Reshape window Callback Function
 void MyReshape(int newWidth, int newHeight) {
 	glViewport(0, 0, newWidth, newHeight);
 	glMatrixMode(GL_PROJECTION);		// 투영 행렬 선택
@@ -555,12 +638,14 @@ void MyReshape(int newWidth, int newHeight) {
 	gluPerspective(90.0, (float)newWidth/(float)newHeight, 1.0, 200.0);
 }
 
+
+/*========== Main ==========*/
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(800, 800);
-	glutCreateWindow("OpenGL Soccer Game Sample by HW");
+	glutCreateWindow("OpenGL Soccer Game Sample by BUG Project");
 	
 	glClearColor(0.0, 0.0, 0.0, 0.0);			// 검은색으로 초기화
 

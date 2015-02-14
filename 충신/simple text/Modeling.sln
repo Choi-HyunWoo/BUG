@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Modeling", "Modeling\Modeling.vcxproj", "{AD62BF68-1689-4E77-90A6-1560E2E4A070}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Soccer_Game_Project", "Soccer_Game_Project\Soccer_Game_Project.vcxproj", "{5DD4F12C-BC40-469D-A3EF-AD890CD27C25}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD62BF68-1689-4E77-90A6-1560E2E4A070}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AD62BF68-1689-4E77-90A6-1560E2E4A070}.Debug|Win32.Build.0 = Debug|Win32
+		{AD62BF68-1689-4E77-90A6-1560E2E4A070}.Release|Win32.ActiveCfg = Release|Win32
+		{AD62BF68-1689-4E77-90A6-1560E2E4A070}.Release|Win32.Build.0 = Release|Win32
+		{5DD4F12C-BC40-469D-A3EF-AD890CD27C25}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5DD4F12C-BC40-469D-A3EF-AD890CD27C25}.Debug|Win32.Build.0 = Debug|Win32
+		{5DD4F12C-BC40-469D-A3EF-AD890CD27C25}.Release|Win32.ActiveCfg = Release|Win32
+		{5DD4F12C-BC40-469D-A3EF-AD890CD27C25}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

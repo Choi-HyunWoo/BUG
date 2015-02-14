@@ -23,7 +23,7 @@ void MyDisplay(){
 	glBindTexture(GL_TEXTURE_2D, MyTextureObject[0]);
 	glBegin(GL_QUADS);
 
-	
+	/*
 	glTexCoord2f(0.0f,0.0f); glVertex3f(-1.0f, -1.0f, 1.0f); //¾Õ¸é
 	glTexCoord2f(1.0f,0.0f); glVertex3f(1.0f, -1.0f, 1.0f);
 	glTexCoord2f(1.0f,1.0f); glVertex3f(1.0f, 1.0f, 1.0f);
@@ -33,17 +33,19 @@ void MyDisplay(){
 	glTexCoord2f(1.0f,1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);
 	glTexCoord2f(0.0f,1.0f); glVertex3f(1.0f, 1.0f, -1.0f);
 	glTexCoord2f(0.0f,0.0f); glVertex3f(1.0f, -1.0f, -1.0f);
-	
+	*/
 	glTexCoord2f(0.0f,1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);//À­¸é
 	glTexCoord2f(0.0f,0.0f); glVertex3f(-1.0f, 1.0f, 1.0f);
 	glTexCoord2f(1.0f,0.0f); glVertex3f(1.0f, 1.0f, 1.0f);
 	glTexCoord2f(1.0f,1.0f); glVertex3f(1.0f, 1.0f, -1.0f);
 	
-	glTexCoord2f(1.0f,1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);//¿À¸¥ÂÊ ¿·¸é
+	/*
+	glTexCoord2f(1.0f,1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);//¾Æ·§¸é
 	glTexCoord2f(0.0f,1.0f); glVertex3f(1.0f, -1.0f, -1.0f);
 	glTexCoord2f(0.0f,0.0f); glVertex3f(1.0f, -1.0f, 1.0f);
 	glTexCoord2f(1.0f,0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);
 
+	
 	glTexCoord2f(1.0f,0.0f); glVertex3f(1.0f, -1.0f, -1.0f);//¿À¸¥ÂÊ ¿·¸é
 	glTexCoord2f(1.0f,1.0f); glVertex3f(1.0f, 1.0f, -1.0f);
 	glTexCoord2f(0.0f,1.0f); glVertex3f(1.0f, 1.0f, 1.0f);
@@ -53,11 +55,11 @@ void MyDisplay(){
 	glTexCoord2f(1.0f,0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);
 	glTexCoord2f(1.0f,1.0f); glVertex3f(-1.0f, 1.0f, 1.0f);
 	glTexCoord2f(0.0f,1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);
-	
+	*/
 	glEnd();
 	glutSwapBuffers();
 }
-/*
+
 void MyTimer(int value){
 	glRotatef(xrot,1.0f,0.0f,0.0f);
 	glRotatef(yrot,0.0f,1.0f,0.0f);
@@ -68,7 +70,7 @@ void MyTimer(int value){
 	glutPostRedisplay();
 	glutTimerFunc(500,MyTimer,1);
 }
-*/
+
 AUX_RGBImageRec * LoadBMP(char *szFilename){
 	FILE *pFile = NULL;
 	if(!szFilename){
@@ -122,7 +124,7 @@ void main(int argc, char *argv[]){
 		glutCreateWindow("OpenGL Sample Program");
 		glutDisplayFunc(MyDisplay);
 		glutReshapeFunc(MyReshape);
-		//glutTimerFunc(500,MyTimer,1);
+		glutTimerFunc(500,MyTimer,1);
 		if(LoadGLTextures(argv[1])){
 			glEnable(GL_TEXTURE_2D);
 			glEnable(GL_SMOOTH);

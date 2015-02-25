@@ -5,8 +5,12 @@
 #include <gl/GLU.h>
 #include <gl/GLAux.h>
 #include <math.h>
+#include<string.h>
+#include<conio.h>//to use itoa(정수를 문자열로)
+#include<stdlib.h>
 
-#define MAX_NO_TEXTURES 1
+
+#define MAX_NO_TEXTURES 7			//1개=지표,6개=하늘(직육면체)
 GLuint texture[MAX_NO_TEXTURES];
 float ratio;
 /* Animation list.
@@ -30,6 +34,13 @@ static int ani = ANI_STAND;			// 애니메이션 판별 변수 (서있는 자세가 기본)
 // 키의 눌린 상태를 저장
 bool SpecialKeyStates[4] = {false, false, false, false};		// 0:LEFT	1:UP	2:RIGHT		3:DOWN
 bool KeyStates[2] = { false, false };							// 0:'E'	1:
+
+//점수 표현을 위한 변수들(골을 넣으면 해당 함수에서 scorep1,혹은 scorep2를 ++시켜주면 됨)
+int  scorep1=0;
+int  scorep2=0;
+char string1[100];
+char string2[100];
+
 
 // angle
 // 팔 각도
@@ -326,7 +337,7 @@ void init(void)
  glEnable ( GL_TEXTURE_2D );
  glPixelStorei ( GL_UNPACK_ALIGNMENT, 1 );
  glGenTextures (1, texture);
- AUX_RGBImageRec *TextureImage[1];					// Create Storage Space For The Texture
+ AUX_RGBImageRec *TextureImage[7];					// Create Storage Space For The Texture
  memset(TextureImage,0,sizeof(void *)*1);            // Set The Pointer To NULL
 	
  if (TextureImage[0]=LoadBMP("ground.bmp"))//이미지 로딩
@@ -337,6 +348,7 @@ void init(void)
   glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[0]->sizeX, TextureImage[0]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[0]->data);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+ 
  }
  if (TextureImage[0])         // If Texture Exists
  {
@@ -346,6 +358,98 @@ void init(void)
   }
   free(TextureImage[0]);        // Free The Image Structure
  }
+
+ if (TextureImage[1]=LoadBMP("sky1.bmp"))//이미지 로딩
+ {
+  glGenTextures(1, &texture[1]);     //텍스쳐 생성
+  //텍스쳐에 이미지 넣기
+  glBindTexture(GL_TEXTURE_2D, texture[1]);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[1]->sizeX, TextureImage[1]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[1]->data);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+ }
+ if (TextureImage[1])         // If Texture Exists
+ {
+  if (TextureImage[1]->data)       // If Texture Image Exists
+  {
+   free(TextureImage[1]->data);     // Free The Texture Image Memory
+  }
+  free(TextureImage[1]);        // Free The Image Structure
+ }
+
+ if (TextureImage[2]=LoadBMP("sky2.bmp"))//이미지 로딩
+ {
+  glGenTextures(1, &texture[2]);     //텍스쳐 생성
+  //텍스쳐에 이미지 넣기
+  glBindTexture(GL_TEXTURE_2D, texture[2]);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[2]->sizeX, TextureImage[2]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[2]->data);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+ }
+ if (TextureImage[2])         // If Texture Exists
+ {
+  if (TextureImage[2]->data)       // If Texture Image Exists
+  {
+   free(TextureImage[2]->data);     // Free The Texture Image Memory
+  }
+  free(TextureImage[2]);        // Free The Image Structure
+ }
+
+  if (TextureImage[3]=LoadBMP("sky3.bmp"))//이미지 로딩
+ {
+  glGenTextures(1, &texture[3]);     //텍스쳐 생성
+  //텍스쳐에 이미지 넣기
+  glBindTexture(GL_TEXTURE_2D, texture[3]);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[3]->sizeX, TextureImage[3]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[3]->data);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+ }
+ if (TextureImage[3])         // If Texture Exists
+ {
+  if (TextureImage[3]->data)       // If Texture Image Exists
+  {
+   free(TextureImage[3]->data);     // Free The Texture Image Memory
+  }
+  free(TextureImage[3]);        // Free The Image Structure
+ }
+
+  if (TextureImage[4]=LoadBMP("sky4.bmp"))//이미지 로딩
+ {
+  glGenTextures(1, &texture[4]);     //텍스쳐 생성
+  //텍스쳐에 이미지 넣기
+  glBindTexture(GL_TEXTURE_2D, texture[4]);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[4]->sizeX, TextureImage[4]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[4]->data);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+ }
+ if (TextureImage[4])         // If Texture Exists
+ {
+  if (TextureImage[4]->data)       // If Texture Image Exists
+  {
+   free(TextureImage[4]->data);     // Free The Texture Image Memory
+  }
+  free(TextureImage[4]);        // Free The Image Structure
+ }
+
+ if (TextureImage[5]=LoadBMP("sky5.bmp"))//이미지 로딩
+ {
+  glGenTextures(1, &texture[5]);     //텍스쳐 생성
+  //텍스쳐에 이미지 넣기
+  glBindTexture(GL_TEXTURE_2D, texture[5]);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[5]->sizeX, TextureImage[5]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[5]->data);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+ }
+ if (TextureImage[5])         // If Texture Exists
+ {
+  if (TextureImage[5]->data)       // If Texture Image Exists
+  {
+   free(TextureImage[5]->data);     // Free The Texture Image Memory
+  }
+  free(TextureImage[5]);        // Free The Image Structure
+ }
+
+
  glEnable ( GL_CULL_FACE ); 
 }
 
@@ -355,46 +459,74 @@ void DrawTexture()
 // glLoadIdentity ( );
  
   //텍스쳐 출력
+ glEnable(GL_TEXTURE_2D);//gl의 텍스처 기능 활성화 ,반대로는 glDisalbe사용
  glPushMatrix();
- glBindTexture ( GL_TEXTURE_2D, texture[0] );
+ glDisable(GL_DEPTH_TEST);
+ glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);//GL_DECAL은 물체면 위에 텍스처 색을 덧칠하는 효과를 주기 위함이다. p.613참고
+ glColor3f(0,0,0);
+
+
+
+
+ glBindTexture ( GL_TEXTURE_2D, texture[1] );//앞
  glBegin ( GL_QUADS );
-/*
-	glTexCoord2f(0.0f,0.0f); glVertex3f(-1.0f, -1.0f, 1.0f); //앞면
-	glTexCoord2f(1.0f,0.0f); glVertex3f(1.0f, -1.0f, 1.0f);
-	glTexCoord2f(1.0f,1.0f); glVertex3f(1.0f, 1.0f, 1.0f);
-	glTexCoord2f(0.0f,1.0f); glVertex3f(-1.0f, 1.0f, 1.0f);
-	
-	glTexCoord2f(1.0f,0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);//뒷면
-	glTexCoord2f(1.0f,1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);
-	glTexCoord2f(0.0f,1.0f); glVertex3f(1.0f, 1.0f, -1.0f);
-	glTexCoord2f(0.0f,0.0f); glVertex3f(1.0f, -1.0f, -1.0f);
-	*/
-	glTexCoord2f(0.0f,1.0f); glVertex3f(-300.0f, 0.0f, -150.0f);//윗면
+    glTexCoord2f(0.0f,0.0f); glVertex3f(-300.0f, 0.0f, -150.0f); 
+	glTexCoord2f(1.0f,0.0f); glVertex3f(300.0f, 0.0f, -150.0f);
+	glTexCoord2f(1.0f,1.0f); glVertex3f(300.0f, 100.0f, -150.0f);
+	glTexCoord2f(0.0f,1.0f); glVertex3f(-300.0f, 100.0f, -150.0f);
+  glEnd();
+  
+  /*
+ glBindTexture ( GL_TEXTURE_2D, texture[2] );//뒤
+ glBegin ( GL_QUADS );
+	glTexCoord2f(0.0f,0.0f); glVertex3f(300.0f, 0.0f, 150.0f);
+	glTexCoord2f(1.0f,0.0f); glVertex3f(-300.0f, 0.0f, 150.0f);
+	glTexCoord2f(1.0f,1.0f); glVertex3f(-300.0f, 100.0f,150.0f);
+	glTexCoord2f(0.0f,1.0f); glVertex3f(300.0f, 100.0f, 150.0f);
+  glEnd();
+  */
+  glBindTexture ( GL_TEXTURE_2D, texture[3] );//좌
+ glBegin ( GL_QUADS );
+	glTexCoord2f(0.0f,0.0f); glVertex3f(300.0f, 0.0f, -150.0f);
+	glTexCoord2f(1.0f,0.0f); glVertex3f(300.0f, 0.0f, 150.0f);
+	glTexCoord2f(1.0f,1.0f); glVertex3f(300.0f, 100.0f, 150.0f);
+	glTexCoord2f(0.0f,1.0f); glVertex3f(300.0f, 100.0f, -150.0f);
+  glEnd();
+
+  glBindTexture ( GL_TEXTURE_2D, texture[4] );//우
+ glBegin ( GL_QUADS );
+    glTexCoord2f(0.0f,0.0f); glVertex3f(-300.0f, 0.0f, 150.0f); 
+	glTexCoord2f(1.0f,0.0f); glVertex3f(-300.0f, 0.0f, -150.0f);
+	glTexCoord2f(1.0f,1.0f); glVertex3f(-300.0f, 100.0f, -150.0f);
+	glTexCoord2f(0.0f,1.0f); glVertex3f(-300.0f, 100.0f, 150.0f);
+  glEnd();
+
+ glBindTexture ( GL_TEXTURE_2D, texture[5] );//상
+ glBegin ( GL_QUADS );
+	glTexCoord2f(0.0f,0.0f); glVertex3f(-300.0f, 100.0f, -150.0f);
+	glTexCoord2f(1.0f,0.0f); glVertex3f(300.0f, 100.0f, -150.0f);
+	glTexCoord2f(1.0f,1.0f); glVertex3f(300.0f, 100.0f,150.0f);
+	glTexCoord2f(0.0f,1.0f); glVertex3f(-300.0f, 100.0f, 150.0f);
+  glEnd();
+   glBindTexture ( GL_TEXTURE_2D, texture[0] );
+ glBegin ( GL_QUADS );
+
+	glTexCoord2f(0.0f,1.0f); glVertex3f(-300.0f, 0.0f, -150.0f);//아래
 	glTexCoord2f(0.0f,0.0f); glVertex3f(-300.0f, 0.0f, 150.0f);
 	glTexCoord2f(1.0f,0.0f); glVertex3f(300.0f,  0.0f, 150.0f);
 	glTexCoord2f(1.0f,1.0f); glVertex3f(300.0f,  0.0f, -150.0f);
 	
-	/*
-	glTexCoord2f(1.0f,1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);//아랫면
-	glTexCoord2f(0.0f,1.0f); glVertex3f(1.0f, -1.0f, -1.0f);
-	glTexCoord2f(0.0f,0.0f); glVertex3f(1.0f, -1.0f, 1.0f);
-	glTexCoord2f(1.0f,0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);
-
-	
-	glTexCoord2f(1.0f,0.0f); glVertex3f(1.0f, -1.0f, -1.0f);//오른쪽 옆면
-	glTexCoord2f(1.0f,1.0f); glVertex3f(1.0f, 1.0f, -1.0f);
-	glTexCoord2f(0.0f,1.0f); glVertex3f(1.0f, 1.0f, 1.0f);
-	glTexCoord2f(0.0f,0.0f); glVertex3f(1.0f, -1.0f, 1.0f);
-
-	glTexCoord2f(0.0f,0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);//왼쪽 옆면
-	glTexCoord2f(1.0f,0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);
-	glTexCoord2f(1.0f,1.0f); glVertex3f(-1.0f, 1.0f, 1.0f);
-	glTexCoord2f(0.0f,1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);
-	*/
  glEnd();
- glPopMatrix();
  
-// glutSwapBuffers();
+ 
+
+  glDepthMask(GL_TRUE);
+  glEnable(GL_DEPTH_TEST);
+  glPopMatrix();
+
+  glDisable(GL_TEXTURE_2D);
+
+  //glutSwapBuffers();
 }
 
 
@@ -413,7 +545,18 @@ void textOut(float x, float y, float z, char *string, void *font)
 /*========== Draw Text ==========*/
 
 void DrawText(){
-	textOut(character_pos_x-40,45,character_pos_z,"KOR 1 | JAP 0",GLUT_BITMAP_TIMES_ROMAN_24);
+	
+	//scorep(int형)을 string(string형)으로 10진수 형태로 변경해 주겠다.
+	itoa(scorep1,string1,10);
+	itoa(scorep2,string2,10);
+	char stringp1[10]="KOR : ";
+	char stringp2[10]="JAP : ";
+	
+	char *result1=strcat(stringp1,string1);//KOR : 1 이런식으로 증가된 점수를 붙여주기 위함
+	char *result2=strcat(stringp2,string2);//JAP : 1 이런식으로 증가된 점수를 붙여주기 위함
+
+	textOut(character_pos_x-40,45,character_pos_z,result1,GLUT_BITMAP_TIMES_ROMAN_24);
+	textOut(character_pos_x-41,40,character_pos_z,result2,GLUT_BITMAP_TIMES_ROMAN_24);
 	textOut(character_pos_x+35,45,character_pos_z,"SBS",GLUT_BITMAP_TIMES_ROMAN_24);
 }
 
@@ -430,7 +573,8 @@ void MyDisplay() {
 	// gluLookAt() 함수로 카메라의 시점을 지정 가능 (인자 : 카메라위치 / 보는대상 / 카메라 위방향 벡터)
 	// 카메라는 캐릭터를 내려다무본다. (공을 본다로 변경)
 	gluLookAt(character_pos_x+0.0, 30.0, character_pos_z+60.0,   character_pos_x, 0.0, character_pos_z,   0.0, 6.0, -3.0);
-
+	//gluLookAt(character_pos_x-30, 40.0, character_pos_z+0.0,   character_pos_x, 0.0, character_pos_z,   -30.0, 50.0, 0.0);
+	
 	//DrawGround();						// 지면을 그린다.
 	DrawTexture();
 	DrawText();							//텍스트 출력.
